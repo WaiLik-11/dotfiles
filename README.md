@@ -18,7 +18,7 @@ bash setup.sh
 
 ---
 
-### 🧪 7. Usage on Any New Machine
+### 🧪 Usage on Any New Machine
 
 On a new WSL/macOS/Linux machine:
 
