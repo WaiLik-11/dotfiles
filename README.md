@@ -14,15 +14,7 @@ My personal dev environment for setting up Zsh, Git, and project structure on an
 ```bash
 git clone https://github.com/WaiLik-11/dotfiles.git ~/dotfiles
 cd ~/dotfiles
+sudo apt update
+sudo apt install zsh -y
 bash setup.sh
 
----
-
-### 🧪 Usage on Any New Machine
-
-On a new WSL/macOS/Linux machine:
-
-```bash
-git clone https://github.com/WaiLik-11/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-bash setup.sh
