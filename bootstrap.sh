@@ -1,62 +1,53 @@
 #!/usr/bin/env bash
+
+# ==============================
+# WaiLik's bootstrap for dotfiles
+# ==============================
+
 set -e
+echo "Starting bootstrap process..."
 
-# ==============================
-# macOS bootstrap for dotfiles
-# ==============================
+OS="$(uname -s)"
 
-# Check if user is on macOs
-if [["$(uname -s)" != "Darwin"]]; then
-    echo "Unsupported OS."
-    echo ""
-    echo "This script only supports macOs."
-    echo ""
-    echo "Detected OS: $(uname -s)"
-    echo ""
-    echo "If you are on Linux / WSL, please run:"
-    echo "  ./install.sh"
-    exit 1
-fi
+install_macos() {
+    echo "macOs detected. Running macOs bootstrap..."
 
-echo "macOs detected - Starting bootstrap..."
-
-# 1. Install Xcode Command Line Tools
-if ! xcode-select -p >/dev/null 2>&1; then
-    echo "Installing Xcode Command Line Tools..."
-    xcode-select --install || true
-    echo ""
-    echo "macOs popup shown."
-    echo "Complete the Xcode installation, then re-run this script."
-    exit 0
-fi
-
-# 2. Homebrew
-if ! command -v brew >/dev/null 2>&1; then
+    if ! command -v brew >/dev/null 2>&1; then
     echo "🍺 Installing Homebrew..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-fi
+  fi
 
-# Ensure brew is in PATH
-eval "$(/opt/homebrew/bin/brew shellenv)"
+  brew install git curl
+}
 
-# 3. Git
-if ! command -v git >/dev/null 2>&1; then
-    echo "Installing Git..."
-    brew install git
-fi
+install_linux() {
+    echo "Linux detected. Running Linux bootstrap..."
+    sudo apt-get update -y
+    sudo apt-get install -y git curl ca-certificates
+}
 
-# 4. Clone dotfiles repository
-DOTFILES_DIR="$HOME/.dotfiles"
+case "$OS" in
+  Darwin) install_macos ;;
+  Linux)  install_linux ;;
+  *)
+    echo "❌ Unsupported OS"
+    exit 1
+    ;;
+esac
 
-if [ ! -d "DOTFILES_DIR" ]; then
-    echo "Cloneing dotfiles repository by WaiLik"
-    git clone https://github.com/WaiLik-11/dotfiles.git "$DOTFILES_DIR"
+echo "✅ git installed: $(git --version)"
+
+REPO_URL="https://github.com/WaiLik-11/dotfiles.git"
+TARGET="$HOME/dotfiles"
+
+if [ -d "$TARGET" ]; then
+  echo "dotfiles already exists at $TARGET"
 else
-    echo "Dotfiles repository already exists at $DOTFILES_DIR"
+  git clone "$REPO_URL" "$TARGET"
 fi
 
-cd "$DOTFILES_DIR"
+cd "$TARGET"
+chmod +x install.sh
 
-# 5. Run the main installer 
-echo "---->>>> Running install.sh"
+echo "Handing over to install.sh..."
 ./install.sh
